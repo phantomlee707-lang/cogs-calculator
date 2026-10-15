@@ -10,10 +10,10 @@ import java.math.RoundingMode
  */
 object UnitConverter {
 
-    fun compatible(a: Unit, b: Unit): Boolean = a.type == b.type
+    fun compatible(a: MeasureUnit, b: MeasureUnit): Boolean = a.type == b.type
 
     /** Convert [quantity] from [from] to [to]. Throws if the units are incompatible. */
-    fun convert(quantity: BigDecimal, from: Unit, to: Unit): BigDecimal {
+    fun convert(quantity: BigDecimal, from: MeasureUnit, to: MeasureUnit): BigDecimal {
         require(from.type == to.type) {
             "Incompatible units: ${from.label} (${from.type}) cannot convert to ${to.label} (${to.type})"
         }

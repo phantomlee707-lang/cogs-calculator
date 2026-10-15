@@ -11,19 +11,19 @@ class IngredientCostTest {
 
     @Test fun flourPerGram() {
         // Rp16,000 for 1 kg → Rp16/g
-        val c = IngredientCost.costPerBase(money("16000"), bd("1"), Unit.KG, Unit.G)
+        val c = IngredientCost.costPerBase(money("16000"), bd("1"), MeasureUnit.KG, MeasureUnit.G)
         assertEquals(0, bd("16").compareTo(c.value))
     }
 
     @Test fun oilPerMl() {
         // Rp50,000 for 2 L → Rp25/ml
-        val c = IngredientCost.costPerBase(money("50000"), bd("2"), Unit.L, Unit.ML)
+        val c = IngredientCost.costPerBase(money("50000"), bd("2"), MeasureUnit.L, MeasureUnit.ML)
         assertEquals(0, bd("25").compareTo(c.value))
     }
 
     @Test fun zeroPurchaseThrows() {
         assertThrows(IllegalArgumentException::class.java) {
-            IngredientCost.costPerBase(money("100"), bd("0"), Unit.KG, Unit.G)
+            IngredientCost.costPerBase(money("100"), bd("0"), MeasureUnit.KG, MeasureUnit.G)
         }
     }
 }

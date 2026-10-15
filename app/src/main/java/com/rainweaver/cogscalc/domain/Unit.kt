@@ -10,7 +10,7 @@ enum class UnitType { WEIGHT, VOLUME, COUNT }
  * (weight base = gram, volume base = ml, count base = piece). Weight, volume and
  * count are never auto-converted between each other.
  */
-enum class Unit(val type: UnitType, val baseFactor: BigDecimal, val label: String) {
+enum class MeasureUnit(val type: UnitType, val baseFactor: BigDecimal, val label: String) {
     G(UnitType.WEIGHT, BigDecimal.ONE, "g"),
     KG(UnitType.WEIGHT, BigDecimal.valueOf(1000), "kg"),
     ML(UnitType.VOLUME, BigDecimal.ONE, "ml"),
@@ -18,6 +18,6 @@ enum class Unit(val type: UnitType, val baseFactor: BigDecimal, val label: Strin
     PIECE(UnitType.COUNT, BigDecimal.ONE, "pcs");
 
     companion object {
-        fun fromLabel(label: String): Unit? = entries.firstOrNull { it.label.equals(label.trim(), ignoreCase = true) }
+        fun fromLabel(label: String): MeasureUnit? = entries.firstOrNull { it.label.equals(label.trim(), ignoreCase = true) }
     }
 }

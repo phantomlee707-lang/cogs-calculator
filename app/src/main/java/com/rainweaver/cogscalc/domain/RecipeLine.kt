@@ -11,9 +11,9 @@ import java.math.BigDecimal
 data class RecipeLineInput(
     val ingredientId: Long,
     val ingredientName: String,
-    val ingredientBaseUnit: Unit,
+    val ingredientBaseUnit: MeasureUnit,
     val ingredientCostPerBase: Money,
     val quantity: BigDecimal,
-    val unit: Unit,
+    val unit: MeasureUnit,
     val conversionFactor: BigDecimal? = null,
 )

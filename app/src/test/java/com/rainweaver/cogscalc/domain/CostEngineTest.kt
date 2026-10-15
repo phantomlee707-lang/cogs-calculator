@@ -10,29 +10,29 @@ class CostEngineTest {
     private fun bd(s: String) = BigDecimal(s)
     private fun money(s: String) = Money.of(bd(s))
 
-    private fun flourLine(qty: String, unit: Unit, factor: BigDecimal? = null) =
-        RecipeLineInput(1, "Flour", Unit.G, money("16"), bd(qty), unit, factor)
+    private fun flourLine(qty: String, unit: MeasureUnit, factor: BigDecimal? = null) =
+        RecipeLineInput(1, "Flour", MeasureUnit.G, money("16"), bd(qty), unit, factor)
 
     @Test fun lineCostGrams() {
-        assertEquals(0, bd("4000").compareTo(CostEngine.lineCost(flourLine("250", Unit.G)).value))
+        assertEquals(0, bd("4000").compareTo(CostEngine.lineCost(flourLine("250", MeasureUnit.G)).value))
     }
 
     @Test fun lineCostKgAutoConverts() {
         // 0.25 kg = 250 g × Rp16 = 4000
-        assertEquals(0, bd("4000").compareTo(CostEngine.lineCost(flourLine("0.25", Unit.KG)).value))
+        assertEquals(0, bd("4000").compareTo(CostEngine.lineCost(flourLine("0.25", MeasureUnit.KG)).value))
     }
 
     @Test fun lineCostCrossTypeWithFactor() {
         // 1 cup, explicit factor 125 g/cup × Rp16 = 2000
-        assertEquals(0, bd("2000").compareTo(CostEngine.lineCost(flourLine("1", Unit.PIECE, bd("125"))).value))
+        assertEquals(0, bd("2000").compareTo(CostEngine.lineCost(flourLine("1", MeasureUnit.PIECE, bd("125"))).value))
     }
 
     @Test fun crossTypeWithoutFactorThrows() {
-        assertThrows(IllegalArgumentException::class.java) { CostEngine.lineCost(flourLine("1", Unit.PIECE)) }
+        assertThrows(IllegalArgumentException::class.java) { CostEngine.lineCost(flourLine("1", MeasureUnit.PIECE)) }
     }
 
     @Test fun batchCostWithAdditional() {
-        val lines = listOf(flourLine("250", Unit.G), flourLine("500", Unit.G)) // 4000 + 8000
+        val lines = listOf(flourLine("250", MeasureUnit.G), flourLine("500", MeasureUnit.G)) // 4000 + 8000
         val total = CostEngine.batchCost(lines, listOf(money("1000")))
         assertEquals(0, bd("13000").compareTo(total.value))
     }

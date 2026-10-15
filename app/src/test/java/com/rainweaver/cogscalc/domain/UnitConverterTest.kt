@@ -11,28 +11,28 @@ class UnitConverterTest {
     private fun bd(s: String) = BigDecimal(s)
 
     @Test fun weightConverts() {
-        assertEquals(0, bd("1000").compareTo(UnitConverter.convert(bd("1"), Unit.KG, Unit.G)))
-        assertEquals(0, bd("1").compareTo(UnitConverter.convert(bd("1000"), Unit.G, Unit.KG)))
-        assertEquals(0, bd("250").compareTo(UnitConverter.convert(bd("0.25"), Unit.KG, Unit.G)))
+        assertEquals(0, bd("1000").compareTo(UnitConverter.convert(bd("1"), MeasureUnit.KG, MeasureUnit.G)))
+        assertEquals(0, bd("1").compareTo(UnitConverter.convert(bd("1000"), MeasureUnit.G, MeasureUnit.KG)))
+        assertEquals(0, bd("250").compareTo(UnitConverter.convert(bd("0.25"), MeasureUnit.KG, MeasureUnit.G)))
     }
 
     @Test fun volumeConverts() {
-        assertEquals(0, bd("1000").compareTo(UnitConverter.convert(bd("1"), Unit.L, Unit.ML)))
-        assertEquals(0, bd("2.5").compareTo(UnitConverter.convert(bd("2500"), Unit.ML, Unit.L)))
+        assertEquals(0, bd("1000").compareTo(UnitConverter.convert(bd("1"), MeasureUnit.L, MeasureUnit.ML)))
+        assertEquals(0, bd("2.5").compareTo(UnitConverter.convert(bd("2500"), MeasureUnit.ML, MeasureUnit.L)))
     }
 
     @Test fun countIsIdentity() {
-        assertEquals(0, bd("12").compareTo(UnitConverter.convert(bd("12"), Unit.PIECE, Unit.PIECE)))
+        assertEquals(0, bd("12").compareTo(UnitConverter.convert(bd("12"), MeasureUnit.PIECE, MeasureUnit.PIECE)))
     }
 
     @Test fun incompatibleThrows() {
-        assertThrows(IllegalArgumentException::class.java) { UnitConverter.convert(bd("1"), Unit.KG, Unit.ML) }
-        assertThrows(IllegalArgumentException::class.java) { UnitConverter.convert(bd("1"), Unit.G, Unit.PIECE) }
+        assertThrows(IllegalArgumentException::class.java) { UnitConverter.convert(bd("1"), MeasureUnit.KG, MeasureUnit.ML) }
+        assertThrows(IllegalArgumentException::class.java) { UnitConverter.convert(bd("1"), MeasureUnit.G, MeasureUnit.PIECE) }
     }
 
     @Test fun compatible() {
-        assertTrue(UnitConverter.compatible(Unit.KG, Unit.G))
-        assertFalse(UnitConverter.compatible(Unit.KG, Unit.L))
-        assertFalse(UnitConverter.compatible(Unit.G, Unit.PIECE))
+        assertTrue(UnitConverter.compatible(MeasureUnit.KG, MeasureUnit.G))
+        assertFalse(UnitConverter.compatible(MeasureUnit.KG, MeasureUnit.L))
+        assertFalse(UnitConverter.compatible(MeasureUnit.G, MeasureUnit.PIECE))
     }
 }

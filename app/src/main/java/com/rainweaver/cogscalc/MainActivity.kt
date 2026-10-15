@@ -3,17 +3,19 @@ package com.rainweaver.cogscalc
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rainweaver.cogscalc.ui.AppNav
+import com.rainweaver.cogscalc.ui.CogsViewModel
+import com.rainweaver.cogscalc.ui.theme.CogsTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AppRoot() }
+        setContent {
+            CogsTheme {
+                val vm: CogsViewModel = viewModel()
+                AppNav(vm)
+            }
+        }
     }
-}
-
-@Composable
-fun AppRoot() {
-    Text("COGS Calculator — Rainweaver Studio")
 }
