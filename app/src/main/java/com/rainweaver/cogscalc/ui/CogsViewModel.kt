@@ -41,7 +41,7 @@ class CogsViewModel(app: Application) : AndroidViewModel(app) {
         val costs = recipes.associate { it.recipe.id to repo.computeCostWith(it, ingMap) }
         val settings = repo.observeSettings().first() ?: AppSettingsEntity()
         _state.update {
-            it.copy(loaded = true, ingredients = ingEntities.map { e -> e.toDomain() },
+            it.copy(loaded = true, ingredients = ingEntities.mapNotNull { e -> runCatching { e.toDomain() }.getOrNull() },
                 recipes = recipes, costs = costs, settings = settings)
         }
     }

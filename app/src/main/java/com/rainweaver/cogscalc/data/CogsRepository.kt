@@ -64,20 +64,25 @@ class CogsRepository(private val db: CogsDatabase) {
     fun computeCostWith(recipe: RecipeWithDetails, ingredients: Map<Long, IngredientEntity>): RecipeCost {
         val lines = recipe.lines.mapNotNull { rl ->
             val ing = ingredients[rl.ingredientId] ?: return@mapNotNull null
-            val base = MeasureUnit.valueOf(ing.baseUnit)
-            val costPerBase = costPerBase(ing)
+            val qty = rl.quantity.toBigDecimalOrNull() ?: return@mapNotNull null
+            val base = runCatching { MeasureUnit.valueOf(ing.baseUnit) }.getOrNull() ?: return@mapNotNull null
+            val unit = runCatching { MeasureUnit.valueOf(rl.unit) }.getOrNull() ?: return@mapNotNull null
+            val costPerBase = runCatching { costPerBase(ing) }.getOrNull() ?: return@mapNotNull null
             val input = RecipeLineInput(
                 ingredientId = ing.id, ingredientName = ing.name, ingredientBaseUnit = base,
-                ingredientCostPerBase = costPerBase, quantity = BigDecimal(rl.quantity),
-                unit = MeasureUnit.valueOf(rl.unit), conversionFactor = rl.conversionFactor?.let { BigDecimal(it) },
+                ingredientCostPerBase = costPerBase, quantity = qty,
+                unit = unit, conversionFactor = rl.conversionFactor?.toBigDecimalOrNull(),
             )
             // Skip lines that can't be costed (missing cross-type factor) rather than crash.
             val lineCost = runCatching { CostEngine.lineCost(input) }.getOrNull() ?: return@mapNotNull null
-            CostLine(ing.name, BigDecimal(rl.quantity), MeasureUnit.valueOf(rl.unit), costPerBase, lineCost)
+            CostLine(ing.name, qty, unit, costPerBase, lineCost)
         }
         val subtotal = lines.fold(Money.ZERO) { acc, l -> acc + l.lineCost }
-        val wastageAmount = subtotal * (BigDecimal(recipe.recipe.wastagePercent).divide(BigDecimal(100)))
-        val additionalTotal = recipe.additionalCosts.fold(Money.ZERO) { acc, ac -> acc + Money(BigDecimal(ac.amount)) }
+        val wastagePct = recipe.recipe.wastagePercent.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        val wastageAmount = subtotal * (wastagePct.divide(BigDecimal(100)))
+        val additionalTotal = recipe.additionalCosts.fold(Money.ZERO) { acc, ac ->
+            acc + Money(ac.amount.toBigDecimalOrNull() ?: BigDecimal.ZERO)
+        }
         val batch = subtotal + wastageAmount + additionalTotal
         val perPortion = CostEngine.costPerPortion(batch, recipe.recipe.portions)
         return RecipeCost(lines, subtotal, wastageAmount, additionalTotal, batch, recipe.recipe.portions, perPortion)

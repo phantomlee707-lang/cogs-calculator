@@ -22,6 +22,16 @@ private data class DraftLine(val key: Long, val ingredientId: Long, val qty: Str
 private data class DraftCost(val label: String, val amount: String)
 private var lineKeySeq = 0L
 
+/**
+ * Parse a user-typed decimal tolerantly (strips thousands separators, spaces,
+ * currency letters) into a canonical BigDecimal string, so raw text like
+ * "10,000" or "Rp 5000" can never be stored verbatim and corrupt the DB on read.
+ */
+private fun cleanDecimal(text: String, fallback: String): String {
+    val cleaned = text.filter { it.isDigit() || it == '.' || it == '-' }
+    return cleaned.toBigDecimalOrNull()?.toPlainString() ?: fallback
+}
+
 @Composable
 fun RecipesScreen(vm: CogsViewModel, onOpen: (Long) -> Unit, onEdit: (Long) -> Unit) {
     val s by vm.state.collectAsStateWithLifecycle()
@@ -67,11 +77,12 @@ fun RecipeEditorScreen(vm: CogsViewModel, existingId: Long, onDone: () -> Unit) 
     fun save() {
         val lineEntities = lines.filter { it.ingredientId != 0L }.map { dl ->
             val ing = s.ingredients.firstOrNull { it.id == dl.ingredientId }
-            RecipeLineEntity(0, existingId, dl.ingredientId, ing?.name ?: "", dl.qty.ifBlank { "1" }, dl.unit, dl.factor.ifBlank { null })
+            RecipeLineEntity(0, existingId, dl.ingredientId, ing?.name ?: "",
+                cleanDecimal(dl.qty, "1"), dl.unit, dl.factor.takeIf { it.isNotBlank() }?.let { cleanDecimal(it, "1") })
         }
-        val costEntities = costs.filter { it.label.isNotBlank() }.map { AdditionalCostEntity(0, existingId, it.label, it.amount.ifBlank { "0" }) }
+        val costEntities = costs.filter { it.label.isNotBlank() }.map { AdditionalCostEntity(0, existingId, it.label, cleanDecimal(it.amount, "0")) }
         vm.saveRecipe(
-            RecipeEntity(existingId, name, category, portions.toIntOrNull() ?: 1, wastage.ifBlank { "0" }, notes, "",
+            RecipeEntity(existingId, name, category, portions.toIntOrNull() ?: 1, cleanDecimal(wastage, "0"), notes, "",
                 existing?.recipe?.archived ?: false, existing?.recipe?.createdAt ?: 0, 0),
             lineEntities, costEntities,
         )
