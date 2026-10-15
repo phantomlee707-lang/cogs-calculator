@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- calculator body -->
+    <path android:fillColor="#FBFAF7" android:pathData="M34,26h40a4,4 0 0 1 4,4v48a4,4 0 0 1 -4,4H34a4,4 0 0 1 -4,-4V30a4,4 0 0 1 4,-4z" />
+    <!-- display -->
+    <path android:fillColor="#1D5B54" android:pathData="M38,34h32v11H38z" />
+    <!-- button grid -->
+    <path android:fillColor="#4DB6AC" android:pathData="M38,51h8v8h-8zM52,51h8v8h-8zM66,51h8v8h-8zM38,63h8v8h-8zM52,63h8v8h-8zM66,63h8v8h-8z" />
+    <path android:fillColor="#4DB6AC" android:pathData="M38,75h36v5H38z" />
+</vector>
